@@ -12,10 +12,18 @@ function init() {
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const canvas2 = document.getElementById("canvas2");
+const ctx2 = canvas2.getContext("2d");
+
+
+
 
 let width = (canvas.width = canvas.clientWidth);
 let height = (canvas.height = canvas.clientHeight);
+let width2 = (canvas2.width = canvas2.clientWidth);
+let height2 = (canvas2.height = canvas2.clientHeight);
 
+let pressed = false;
 let x = 0;
 let y = 0;
 let size = 1;
@@ -23,6 +31,7 @@ let x1 = 0;
 let y1 = 0;
 let color = "white";
 ctx.translate(width / 2, height / 2);
+ctx2.translate(width / 2, height / 2);
 let points = [];
 
 function drawCircle(x, y, size2, color2) {
@@ -38,7 +47,7 @@ function drawLine(x1, y1, x2, y2, size2, color2) {
   ctx.lineTo(x2, y2);
   ctx.lineCap = "round";
   ctx.strokeStyle = color2 || color;
-  ctx.lineWidth = (size2 || size)*2;
+  ctx.lineWidth = (size2 || size) * 2;
   ctx.stroke();
   color = "white";
 }
@@ -54,7 +63,7 @@ function drawPoints(points) {
 
 function makePoints(start, end) {
   for (let x = start; x <= end; x += 1) {
-    y = x;
+    y = x*x/16;
     points.push([x * 15, y * 15]);
   }
   x1 = points[0][0];
@@ -75,8 +84,6 @@ prepare();
 
 function drawLines(pos) {
   ctx.save();
-
-
 
   ctx.shadowColor = "red";
   ctx.shadowBlur = 15;
@@ -101,15 +108,38 @@ function drawVectors(e) {
 
   color = "red";
   let pos = [e.clientX - width / 2, e.clientY - height / 2];
-  drawLine(x, y, pos[0], pos[1], 10, 'white');
+  drawLine(x, y, pos[0], pos[1], 10, "white");
+
+  if (pressed) {
+    console.log("wow");
+    ctx2.beginPath();
+    ctx2.shadowColor = "red";
+ctx2.shadowBlur = 5
+    ctx2.fillStyle = "white";
+    ctx2.arc(pos[0], pos[1], 10, 0, Math.PI * 2);
+    ctx2.fill();
+    drawLine(x, y, pos[0], pos[1], 10, 'white')
+
+    ctx2.beginPath();
+    ctx2.moveTo(x, y);
+    ctx2.lineTo(pos[0], pos[1]);
+    ctx2.lineCap = "round";
+    ctx2.strokeStyle = "white";
+    ctx2.lineWidth = 10 * 2;
+    ctx2.stroke();
+    color = "white";
+  }
   x = pos[0];
   y = pos[1];
-
   drawLines(pos);
 }
 
-
-
+window.addEventListener("mousedown", () => {
+  pressed = true;
+});
+window.addEventListener("mouseup", () => {
+  pressed = false;
+});
 window.addEventListener("mousemove", drawVectors);
 // window.addEventListener('resize', init)
 setInterval(() => {
