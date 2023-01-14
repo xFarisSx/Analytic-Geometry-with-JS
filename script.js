@@ -74,6 +74,12 @@ function prepare() {
 prepare();
 
 function drawLines(pos) {
+  ctx.save();
+
+
+
+  ctx.shadowColor = "red";
+  ctx.shadowBlur = 15;
   let di = Math.abs(-pos[1] - pos[0]) / Math.sqrt(2);
   let hip2 = pos[0] * pos[0] + -pos[1] * -pos[1];
   let z = Math.sqrt(hip2 / 2 - (di * di) / 2);
@@ -87,6 +93,7 @@ function drawLines(pos) {
   drawLine(0, 0, pos[0], pos[1]);
 
   drawCircle(pos[0], pos[1], 10, "white");
+  ctx.restore();
 }
 
 function drawVectors(e) {
@@ -101,11 +108,16 @@ function drawVectors(e) {
   drawLines(pos);
 }
 
+
+
 window.addEventListener("mousemove", drawVectors);
 // window.addEventListener('resize', init)
 setInterval(() => {
+  ctx.save();
+  ctx.shadowColor = "red";
+  ctx.shadowBlur = 15;
+  ctx.restore();
   drawLines([x, y]);
-
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.rect(-width / 2, -height / 2, width, height);
   ctx.fill();
