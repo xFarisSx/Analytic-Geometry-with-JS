@@ -32,13 +32,13 @@ function drawCircle(x, y, size2, color2) {
   ctx.fill();
 }
 
-function drawLine(x1, y1, x2, y2) {
+function drawLine(x1, y1, x2, y2, size2, color2) {
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.lineCap = "round";
-  ctx.strokeStyle = color;
-  ctx.lineWidth = size * 2;
+  ctx.strokeStyle = color2 || color;
+  ctx.lineWidth = (size2 || size)*2;
   ctx.stroke();
   color = "white";
 }
@@ -94,8 +94,10 @@ function drawVectors(e) {
 
   color = "red";
   let pos = [e.clientX - width / 2, e.clientY - height / 2];
+  drawLine(x, y, pos[0], pos[1], 10, 'white');
   x = pos[0];
   y = pos[1];
+
   drawLines(pos);
 }
 
