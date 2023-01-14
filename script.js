@@ -214,8 +214,19 @@ setInterval(() => {
   ctx.shadowColor = "red";
   ctx.shadowBlur = 15;
   ctx.restore();
+  if (keys['keyM']) {
+    init()
+
+  }
   drawLines([x, y]);
   ctx.fillStyle = "rgba(0,0,0,0.05)";
   ctx.rect(-width / 2, -height / 2, width, height);
   ctx.fill();
 }, 10);
+
+window.addEventListener("keypress", (e) => {
+  if (e.key == "c") {
+    ctx.clearRect(-width / 2, -height / 2, width, height);
+    ctx2.clearRect(-width / 2, -height / 2, width, height);
+  }
+});
