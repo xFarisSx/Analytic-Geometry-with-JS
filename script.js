@@ -15,13 +15,18 @@ const ctx = canvas.getContext("2d");
 const canvas2 = document.getElementById("canvas2");
 const ctx2 = canvas2.getContext("2d");
 
-
-
-
 let width = (canvas.width = canvas.clientWidth);
 let height = (canvas.height = canvas.clientHeight);
 let width2 = (canvas2.width = canvas2.clientWidth);
 let height2 = (canvas2.height = canvas2.clientHeight);
+
+let keys = {
+  keyL: false,
+  keyR: false,
+  keyM: false,
+};
+
+let pressPos = [0, 0];
 
 let pressed = false;
 let x = 0;
@@ -63,7 +68,7 @@ function drawPoints(points) {
 
 function makePoints(start, end) {
   for (let x = start; x <= end; x += 1) {
-    y = x*x/16;
+    y = (x * x) / 16;
     points.push([x * 15, y * 15]);
   }
   x1 = points[0][0];
@@ -110,15 +115,15 @@ function drawVectors(e) {
   let pos = [e.clientX - width / 2, e.clientY - height / 2];
   drawLine(x, y, pos[0], pos[1], 10, "white");
 
-  if (pressed) {
+  if (keys["keyL"]) {
     console.log("wow");
     ctx2.beginPath();
     ctx2.shadowColor = "red";
-ctx2.shadowBlur = 5
+    ctx2.shadowBlur = 5;
     ctx2.fillStyle = "white";
     ctx2.arc(pos[0], pos[1], 10, 0, Math.PI * 2);
     ctx2.fill();
-    drawLine(x, y, pos[0], pos[1], 10, 'white')
+    drawLine(x, y, pos[0], pos[1], 10, "white");
 
     ctx2.beginPath();
     ctx2.moveTo(x, y);
@@ -128,17 +133,79 @@ ctx2.shadowBlur = 5
     ctx2.lineWidth = 10 * 2;
     ctx2.stroke();
     color = "white";
+  } else if (keys["keyR"]) {
+    clearRoundRect(ctx2, pos[0] - 12.5, pos[1] - 12.5, 25, 25, 15);
+  } else if (keys["keyM"]) {
+    ctx.save();
+    ctx.shadowColor = "red";
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.moveTo(pressPos[0], pressPos[1]);
+    ctx.lineTo(pos[0], pos[1]);
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 10 * 2;
+    ctx.stroke();
+    ctx.restore();
   }
+
   x = pos[0];
   y = pos[1];
   drawLines(pos);
 }
+document.addEventListener(
+  "contextmenu",
+  (event) => {
+    event.preventDefault();
+    // keys['keyR'] = false
+  },
+  false
+);
 
-window.addEventListener("mousedown", () => {
+function clearRoundRect(context, x, y, width, height, radius) {
+  context.save();
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius, false, true);
+  context.clip();
+  context.clearRect(x, y, width, height);
+  context.restore();
+}
+
+window.addEventListener("mousedown", (e) => {
   pressed = true;
+  // e.preventDefault();
+  if (e.button == 0) {
+    keys["keyL"] = true;
+  }
+  if (e.button == 2) {
+    keys["keyR"] = true;
+  }
+  if (e.button == 1) {
+    keys["keyM"] = true;
+    pressPos = [x, y];
+  }
 });
-window.addEventListener("mouseup", () => {
+window.addEventListener("mouseup", (e) => {
+  // e.preventDefault();
   pressed = false;
+  if (e.button == 0) {
+    keys["keyL"] = false;
+  }
+  if (e.button == 2) {
+    keys["keyR"] = false;
+  }
+  if (e.button == 1) {
+    keys["keyM"] = false;
+    ctx2.shadowColor = "red";
+    ctx2.shadowBlur = 15;
+    ctx2.beginPath();
+    ctx2.moveTo(pressPos[0], pressPos[1]);
+    ctx2.lineTo(x, y);
+    ctx2.lineCap = "round";
+    ctx2.strokeStyle = "white";
+    ctx2.lineWidth = 10 * 2;
+    ctx2.stroke();
+  }
 });
 window.addEventListener("mousemove", drawVectors);
 // window.addEventListener('resize', init)
