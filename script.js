@@ -1,9 +1,23 @@
+function init() {
+  // width = canvas.width = canvas.clientWidth;
+  // height = canvas.height = canvas.clientHeight;
+  // ctx.translate(width / 2, height / 2);
+  drawLine(0, 0, width / 2, 0);
+  drawLine(0, 0, 0, height / 2);
+  drawLine(0, 0, -width / 2, 0);
+  drawLine(0, 0, 0, -height / 2);
+
+  drawPoints(points);
+}
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const width = (canvas.width = canvas.clientWidth);
-const height = (canvas.height = canvas.clientHeight);
+let width = (canvas.width = canvas.clientWidth);
+let height = (canvas.height = canvas.clientHeight);
 
+let x = 0;
+let y = 0;
 let size = 1;
 let x1 = 0;
 let y1 = 0;
@@ -11,10 +25,10 @@ let color = "white";
 ctx.translate(width / 2, height / 2);
 let points = [];
 
-function drawCircle(x, y) {
+function drawCircle(x, y, size2, color2) {
   ctx.beginPath();
-  ctx.arc(x, y, size, 0, Math.PI * 2);
-  ctx.fillStyle = color;
+  ctx.arc(x, y, size2 || size, 0, Math.PI * 2);
+  ctx.fillStyle = color2 || color;
   ctx.fill();
 }
 
@@ -22,6 +36,7 @@ function drawLine(x1, y1, x2, y2) {
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
+  ctx.lineCap = "round";
   ctx.strokeStyle = color;
   ctx.lineWidth = size * 2;
   ctx.stroke();
@@ -58,20 +73,10 @@ function prepare() {
 }
 prepare();
 
-function drawVectors(e) {
-  ctx.clearRect(-width / 2, -height / 2, width, height);
-  drawLine(0, 0, width / 2, 0);
-  drawLine(0, 0, 0, height / 2);
-  drawLine(0, 0, -width / 2, 0);
-  drawLine(0, 0, 0, -height / 2);
-
-  drawPoints(points);
-
-  color = "red";
-  let pos = [e.clientX - width / 2, e.clientY - height / 2];
+function drawLines(pos) {
   let di = Math.abs(-pos[1] - pos[0]) / Math.sqrt(2);
   let hip2 = pos[0] * pos[0] + -pos[1] * -pos[1];
-  let z = Math.sqrt(hip2/2 - di * di/2);
+  let z = Math.sqrt(hip2 / 2 - (di * di) / 2);
   color = "red";
   pos[1] > pos[0] ? drawLine(0, 0, -z, z) : drawLine(0, 0, z, -z);
   color = "red";
@@ -80,6 +85,26 @@ function drawVectors(e) {
   drawLine(0, 0, 0, pos[1]);
   color = "red";
   drawLine(0, 0, pos[0], pos[1]);
+
+  drawCircle(pos[0], pos[1], 10, "white");
+}
+
+function drawVectors(e) {
+  init();
+
+  color = "red";
+  let pos = [e.clientX - width / 2, e.clientY - height / 2];
+  x = pos[0];
+  y = pos[1];
+  drawLines(pos);
 }
 
 window.addEventListener("mousemove", drawVectors);
+// window.addEventListener('resize', init)
+setInterval(() => {
+  drawLines([x, y]);
+
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.rect(-width / 2, -height / 2, width, height);
+  ctx.fill();
+}, 10);
