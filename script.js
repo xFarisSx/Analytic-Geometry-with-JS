@@ -66,10 +66,10 @@ function drawPoints(points) {
   }
 }
 
-function makePoints(start, end, func) {
+function makePoints(start, end, func, moveX) {
   let points = [];
   for (let x = start; x <= end; x += 1) {
-    y = func(x);
+    y = func(x-moveX);
     points.push([x, y]);
   }
   x1 = points[0][0];
@@ -78,28 +78,39 @@ function makePoints(start, end, func) {
 }
 
 function drawSquare(x, y, sWidth, front) {
+  let moveX = x
   let oran = 1;
-  makePoints(x, x + sWidth / (oran * 2), (x) => {
-    return x + y;
-  });
-  if (front) {
-    makePoints(x - sWidth / (oran * 2), x, (x) => {
+  let x1 = x-sWidth/2
+  let x2 = x+sWidth/2
+  let ortaX = (x1+x2)/2
+  let y1 = y-sWidth/2
+  let y2 = y+sWidth/2
+  let ortaY = (y1+y2)/2
+  makePoints(ortaX, ortaX + sWidth / (oran * 2), (x) => {
+    return x + y ;
+  }, moveX);
+  if (true) {
+    makePoints(ortaX - sWidth / (oran * 2), ortaX, (x) => {
       return x + sWidth + y;
-    });
-    makePoints(x, x + sWidth / (oran * 2), (x) => {
+    }, moveX);
+    makePoints(ortaX, ortaX + sWidth / (oran * 2), (x) => {
       return -x + sWidth + y;
-    });
+    }, moveX);
   }
-  makePoints(x - sWidth / (oran * 2), x, (x) => {
+  makePoints(ortaX - sWidth / (oran * 2), ortaX, (x) => {
     return -x + y;
-  });
+  },moveX);
 }
 
-function drawCube(y, width) {
-  drawSquare(0, 0, width, false);
-  drawSquare(0, y, width, true);
-  drawLine(-width / 2, -width / 2 - y, -width / 2, -Math.abs(width / 2));
-  drawLine(width / 2, -width / 2 - y, width / 2, -Math.abs(width / 2));
+function drawCube(x, x2,y, y2, width) {
+  let ortaX = (x + x2)/2
+  let ortaY = (y + y2)/2
+  
+
+  drawSquare(x2, y2, width, false);
+  drawSquare(x, y, width, true);
+  drawLine(ortaX-width / 2, -y-width/2, ortaX-width / 2, -(y2+width/2));
+  drawLine(ortaX+ width / 2,- y-width/2,ortaX+ width / 2, -(y2+width/2));
   // drawLine()
 }
 
@@ -109,7 +120,7 @@ function prepare() {
   drawLine(0, 0, -width / 2, 0);
   drawLine(0, 0, 0, -height / 2);
 
-  drawCube(100, 100);
+  drawCube(-150,-150,50, 150, 200);
 
   // drawPoints(points);
 }
